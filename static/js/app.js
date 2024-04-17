@@ -1,46 +1,5 @@
-// initial setup
-var data = {};
-
-var input = d3.select("#selDataset");
-var demo_info_panel = d3.select("#sample-metadata");
-
-// Function titleCase from this website:
-// https://www.freecodecamp.org/news/three-ways-to-title-case-a-sentence-in-javascript-676a9175eb27/
-function titleCase(str) {
-    return str.toLowerCase().split(' ').map(function(word) {
-        return (word.charAt(0).toUpperCase() + word.slice(1));
-    }).join(' ');
-}
-
-// populating the demo_info_panel
-function populateDemoInfo(idNum) {
-    console.log("Populate: " + idNum);
-    var metadata_filter = data.metadata.filter(item => item["id"] == idNum);
-    console.log(`metadata_filter length: ${metadata_filter.length}`);
-    demo_info_panel.html("");
-    Object.entries(metadata_filter[0]).forEach(([key, value]) => {
-        var titleKey = titleCase(key);
-        demo_info_panel.append("h6").text(`${titleKey}: ${value}`)
-    });
-}
-
-// using a comparing function
-function compareValues(key, order = 'asc') {
-    return function innerSort(a, b) {
-        if (!a.hasOwnProperty(key) || !b.hasOwnProperty(key)) {
-            return 0;
-        }
-        const varA = (typeof a[key] === 'string') ? a[key].toUpperCase() : a[key];
-        const varB = (typeof b[key] === 'string') ? b[key].toUpperCase() : b[key];
-        let comparison = 0;
-        if (varA > varB) {
-            comparison = 1;
-        } else if (varA < varB) {
-            comparison = -1;
-        }
-        return (order === 'desc') ? (comparison * -1) : comparison;
-    };
-}
+// Define a color array
+var colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'];
 
 // creating bar plot
 function drawBarPlot(idNum) {
@@ -84,7 +43,7 @@ function drawBarPlot(idNum) {
         text: otu_labels_list,
         orientation: 'h',
         marker: {
-            color: ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
+            color: colors // Use the colors array here
         }
     };
 
@@ -182,8 +141,8 @@ function drawGaugeChart(idNum) {
 		textinfo: 'text',
 		textposition: 'inside',
 		marker: {
-        colors: ['#a8e6cf', '#dcedc1', '#ffd3b5', '#ffaaa6', '#ff8c94', '#db3069', '#703f5c', '#001e1d', '#1d4350', 'rgba(0, 0, 0, 0)'] // Transparent color for blank label
-    },
+            colors: colors.concat(['rgba(0, 0, 0, 0)']) // Concatenate with transparent color for blank label
+        },
 		labels: ['8-9', '7-8', '6-7', '5-6', '4-5', '3-4', '2-3', '1-2', '0-1', ''],
 		hoverinfo: 'label',
 		hole: .5,
@@ -216,40 +175,3 @@ function drawGaugeChart(idNum) {
     };
     Plotly.newPlot('gauge', trace_data3, layout);
 }
-
-// initializing graphs with Data
-function initialization() {
-    d3.json("./data/samples.json").then(function(jsonData) {
-        console.log("Gathering Data");
-        data = jsonData;
-        console.log("Keys: " + Object.keys(data));
-        names = data.names;
-        console.log("Loaded JSON Data:", data);
-
-        // Test Subject ID No. Selector
-        names.forEach(element => {
-            input.append("option").text(element).property("value", element);
-        });
-
-        // Update the Demographic Info Panel
-        var idNum = names[0];
-        populateDemoInfo(idNum);
-
-        // Draw graphs
-        drawBarPlot(idNum);
-        drawBubbleChart(idNum);
-        drawGaugeChart(idNum);
-    });
-}
-
-initialization();
-
-function optionChanged(idNum) {
-    // Update the Demographic Info Panel
-    populateDemoInfo(idNum);
-
-    // Draw graphs
-    drawBarPlot(idNum);
-    drawBubbleChart(idNum);
-    drawGaugeChart(idNum);
-};
