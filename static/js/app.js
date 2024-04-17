@@ -176,14 +176,15 @@ function drawGaugeChart(idNum) {
         text: level,
         hoverinfo: 'text+name'
     }, {
-        values: [180 / 9, 180 / 9, 180 / 9, 180 / 9, 180 / 9, 180 / 9, 180 / 9, 180 / 9, 180 / 9, 0], // Remove the color for the empty label
+        values: [180 / 9, 180 / 9, 180 / 9, 180 / 9, 180 / 9, 180 / 9, 180 / 9, 180 / 9, 180 / 9, 180],
         rotation: 90,
-        text: ['8-9', '7-8', '6-7', '5-6', '4-5', '3-4', '2-3', '1-2', '0-1', ''], // Keep the labels
+        text: ['8-9', '7-8', '6-7', '5-6', '4-5', '3-4', '2-3', '1-2', '0-1', ''],
         textinfo: 'text',
         textposition: 'inside',
         marker: {
-            colors: ['#a8e6cf', '#dcedc1', '#ffd3b5', '#ffaaa6', '#ff8c94', '#db3069', '#703f5c', '#001e1d', '#1d4350', '']
+            colors: ['#a8e6cf', '#dcedc1', '#ffd3b5', '#ffaaa6', '#ff8c94', '#db3069', '#703f5c', '#001e1d', '#1d4350', '#ffffff']
         },
+        labels: ['8-9', '7-8', '6-7', '5-6', '4-5', '3-4', '2-3', '1-2', '0-1', ''],
         hoverinfo: 'label',
         hole: .5,
         type: 'pie',
