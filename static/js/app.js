@@ -13,12 +13,15 @@ function titleCase(str) {
 }
 
 // populating the demo_info_panel
-function populateDemoInfo (idNum) {
-	console.log("Populate: " +idNum);
-	var metadata_filter = data.metadata.filter(item => item["id"] == idNum);
-	console.log(`metadata_filter length: ${metadata_filter.length}`);
-	demo_info_panel.html("");
-	Object.entries(metadata_filter[0]).forEach(([key, value]) => { var titleKey = titleCase(key); demo_info_panel.append("h6").text(`${titleKey}: ${value}`) });
+function populateDemoInfo(idNum) {
+    console.log("Populate: " + idNum);
+    var metadata_filter = data.metadata.filter(item => item["id"] == idNum);
+    console.log(`metadata_filter length: ${metadata_filter.length}`);
+    demo_info_panel.html("");
+    Object.entries(metadata_filter[0]).forEach(([key, value]) => {
+        var titleKey = titleCase(key);
+        demo_info_panel.append("h6").text(`${titleKey}: ${value}`)
+    });
 }
 
 // using a comparing function
@@ -27,67 +30,74 @@ function compareValues(key, order = 'asc') {
         if (!a.hasOwnProperty(key) || !b.hasOwnProperty(key)) {
             return 0;
         }
-        const varA = (typeof a[key] === 'string')
-            ? a[key].toUpperCase() : a[key];
-        const varB = (typeof b[key] === 'string')
-            ? b[key].toUpperCase() : b[key];
+        const varA = (typeof a[key] === 'string') ? a[key].toUpperCase() : a[key];
+        const varB = (typeof b[key] === 'string') ? b[key].toUpperCase() : b[key];
         let comparison = 0;
         if (varA > varB) {
             comparison = 1;
         } else if (varA < varB) {
             comparison = -1;
         }
-        return (
-            (order === 'desc') ? (comparison * -1) : comparison
-        );
+        return (order === 'desc') ? (comparison * -1) : comparison;
     };
 }
 
 // creating bar plot
-function drawBarPlot (idNum) {
-	console.log("Bar: " + idNum);
-	var samples_filter1 = data["samples"].filter(item => item["id"] == idNum);
-	
-	// changing data into arrays
-	var sample_values = samples_filter1[0].sample_values;
+function drawBarPlot(idNum) {
+    console.log("Bar: " + idNum);
+    var samples_filter1 = data["samples"].filter(item => item["id"] == idNum);
+
+    // changing data into arrays
+    var sample_values = samples_filter1[0].sample_values;
     var otu_ids = samples_filter1[0].otu_ids;
     var otu_labels = samples_filter1[0].otu_labels;
-	
-	var all_combined = []
-	for (var i = 0; i < sample_values.length; i++) {
-		var otu_id = otu_ids[i];
+
+    var all_combined = []
+    for (var i = 0; i < sample_values.length; i++) {
+        var otu_id = otu_ids[i];
         var otu_text = "OTU " + otu_id.toString();
-        var combined_object = {"sample_values": sample_values[i], "otu_ids": otu_text, "otu_labels": otu_labels[i]};
+        var combined_object = {
+            "sample_values": sample_values[i],
+            "otu_ids": otu_text,
+            "otu_labels": otu_labels[i]
+        };
         all_combined.push(combined_object);
     }
-	
-	// sort and slice
-	var sorted_list = all_combined.sort(compareValues("sample_values", "desc"));
+
+    // sort and slice
+    var sorted_list = all_combined.sort(compareValues("sample_values", "desc"));
     var sliced_list = sorted_list.slice(0, 10);
-	
-	// map text to arrays
+
+    // map text to arrays
     var sample_values_list = sliced_list.map(item => item.sample_values).reverse();
-     console.log(`sample_values_list: ${sample_values_list}`);
+    console.log(`sample_values_list: ${sample_values_list}`);
     var otu_ids_list = sliced_list.map(item => item.otu_ids).reverse();
-     console.log(`otu_ids_list: ${otu_ids_list}`);
+    console.log(`otu_ids_list: ${otu_ids_list}`);
     var otu_labels_list = sliced_list.map(item => item.otu_labels).reverse();
-     console.log(`otu_labels_list: ${otu_labels_list}`);
-	 
-	 // create the plot
-	 var trace1 = {
+    console.log(`otu_labels_list: ${otu_labels_list}`);
+
+    // create the plot
+    var trace1 = {
         type: "bar",
         y: otu_ids_list,
         x: sample_values_list,
         text: otu_labels_list,
-        orientation: 'h'
+        orientation: 'h',
+        marker: {
+            color: ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
+        }
     };
-	
-	var trace_data1 = [trace1];
-	
-	var layout = {
+
+    var trace_data1 = [trace1];
+
+    var layout = {
         title: "Top 10 OTU's Found",
-        yaxis: { title: "OTU Labels" },
-        xaxis: { title: "Values"}
+        yaxis: {
+            title: "OTU Labels"
+        },
+        xaxis: {
+            title: "Values"
+        }
     };
 
     Plotly.newPlot("bar", trace_data1, layout);
@@ -105,9 +115,9 @@ function drawBubbleChart(idNum) {
         mode: 'markers',
         text: samples_filter2[0].otu_labels,
         marker: {
-                    color: samples_filter2[0].otu_ids,
-                    size: samples_filter2[0].sample_values,
-                    colorscale: "Earth"
+            color: samples_filter2[0].otu_ids,
+            size: samples_filter2[0].sample_values,
+            colorscale: "Earth"
         }
     };
 
@@ -116,10 +126,12 @@ function drawBubbleChart(idNum) {
 
     // Define the layout
     var layout = {
-                    showlegend: false,
-                    height: 600,
-                    width: 1500,
-                    xaxis: { title: "OTU ID"}
+        showlegend: false,
+        height: 600,
+        width: 1500,
+        xaxis: {
+            title: "OTU ID"
+        }
     };
 
     Plotly.newPlot('bubble', trace_data2, layout);
@@ -131,7 +143,7 @@ function drawGaugeChart(idNum) {
 
     var metadata_filter2 = data.metadata.filter(item => item["id"] == idNum);
     var level = metadata_filter2[0].wfreq;
-    var offset = [ 0, 0, 3, 3, 1, -0.5, -2, -3, 0, 0];
+    var offset = [0, 0, 3, 3, 1, -0.5, -2, -3, 0, 0];
 
     // Calc the meter point
     var degrees = 180 - (level * 20 + offset[level]);
@@ -152,48 +164,72 @@ function drawGaugeChart(idNum) {
 
     // Create the trace_data3 variable
     var trace_data3 = [{
-                        type: 'scatter',
-                        x: [0],
-                        y: [0],
-                        marker: {size: 16, color: '#850000'},
-                        showlegend: false,
-                        name: 'frequency',
-                        text: level,
-                        hoverinfo: 'text+name'},
-                    {   values: [180/9, 180/9, 180/9, 180/9, 180/9, 180/9, 180/9, 180/9, 180/9, 180],
-                        rotation: 90,
-                        text: ['8-9','7-8','6-7','5-6', '4-5', '3-4', '2-3', '1-2', '0-1', ''],
-                        textinfo: 'text',
-                        textposition: 'inside',
-                        marker: {colors: [  '#84B589', '#89BB8F', '#8CBF88', '#B7CC92', '#D5E49D',
-                                            '#E5E7B3', '#E9E6CA', '#F4F1E5', '#F8F3EC', '#FFFFFF',]},
-                        labels: ['8-9','7-8','6-7','5-6', '4-5', '3-4', '2-3', '1-2', '0-1', ''],
-                        hoverinfo: 'label',
-                        hole: .5,
-                        type: 'pie',
-                        showlegend: false
+        type: 'scatter',
+        x: [0],
+        y: [0],
+        marker: {
+            size: 16,
+            color: '#850000'
+        },
+        showlegend: false,
+        name: 'frequency',
+        text: level,
+        hoverinfo: 'text+name'
+    }, {
+        values: [180 / 9, 180 / 9, 180 / 9, 180 / 9, 180 / 9, 180 / 9, 180 / 9, 180 / 9, 180 / 9, 180],
+        rotation: 90,
+        text: ['8-9', '7-8', '6-7', '5-6', '4-5', '3-4', '2-3', '1-2', '0-1', ''],
+        textinfo: 'text',
+        textposition: 'inside',
+        marker: {
+            colors: ['#a8e6cf', '#dcedc1', '#ffd3b5', '#ffaaa6', '#ff8c94', '#db3069', '#703f5c', '#001e1d', '#1d4350', '#232931']
+        },
+        labels: ['8-9', '7-8', '6-7', '5-6', '4-5', '3-4', '2-3', '1-2', '0-1', ''],
+        hoverinfo: 'label',
+        hole: .5,
+        type: 'pie',
+        showlegend: false
     }];
 
     var layout = {
-                    shapes:[{ type: 'path', path: triangle, fillcolor: '#850000', line: { color: '#850000' } }],
-                    title: '<b>Belly Button Wash Frequency</b><br>Scrubs per Week',
-                    xaxis: {zeroline: false, showticklabels: false, showgrid: false, range: [-1, 1]},
-                    yaxis: {zeroline: false, showticklabels: false, showgrid: false, range: [-1, 1]}
+        shapes: [{
+            type: 'path',
+            path: triangle,
+            fillcolor: '#850000',
+            line: {
+                color: '#850000'
+            }
+        }],
+        title: '<b>Belly Button Wash Frequency</b><br>Scrubs per Week',
+        xaxis: {
+            zeroline: false,
+            showticklabels: false,
+            showgrid: false,
+            range: [-1, 1]
+        },
+        yaxis: {
+            zeroline: false,
+            showticklabels: false,
+            showgrid: false,
+            range: [-1, 1]
+        }
     };
     Plotly.newPlot('gauge', trace_data3, layout);
 }
 
 // initializing graphs with Data
-function initialization () {
+function initialization() {
     d3.json("./data/samples.json").then(function(jsonData) {
         console.log("Gathering Data");
         data = jsonData;
         console.log("Keys: " + Object.keys(data));
         names = data.names;
-		console.log("Loaded JSON Data:", data);
+        console.log("Loaded JSON Data:", data);
 
         // Test Subject ID No. Selector
-        names.forEach(element => { input.append("option").text(element).property("value", element); });
+        names.forEach(element => {
+            input.append("option").text(element).property("value", element);
+        });
 
         // Update the Demographic Info Panel
         var idNum = names[0];
