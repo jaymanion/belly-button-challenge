@@ -2,8 +2,8 @@
 var data = {};
 
 // Global HTML selectors
-var inputSelector = d3.select("#selDataset");
-var panelDemoInfo = d3.select("#sample-metadata");
+var testsubjectidnumber = d3.select("#selDataset");
+var demoinfo = d3.select("#sample-metadata");
 
 // Function titleCase from this website:
 // https://www.freecodecamp.org/news/three-ways-to-title-case-a-sentence-in-javascript-676a9175eb27/
@@ -14,19 +14,19 @@ function titleCase(str) {
 }
 
 // Populate the Demographic Info panel
-function populateDemoInfo(idNum) {
+function populatedemoinfo(idNum) {
     // Log a change
     console.log("Pop: " + idNum);
 
     // Just grab the one ID we want
-    var metadataFilter = data.metadata.filter(item => item["id"] == idNum);
-    console.log(`metaFilter length: ${metadataFilter.length}`);
+    var metadatafilter = data.metadata.filter(item => item["id"] == idNum);
+    console.log(`metaFilter length: ${metadatafilter.length}`);
 
     // Clear out the data first
-    panelDemoInfo.html("");
+    demoinfo.html("");
 
     // Fill it back in
-    Object.entries(metadataFilter[0]).forEach(([key, value]) => { var titleKey = titleCase(key); panelDemoInfo.append("h6").text(`${titleKey}: ${value}`) });
+    Object.entries(metadatafilter[0]).forEach(([key, value]) => { var titleKey = titleCase(key); demoinfo.append("h6").text(`${titleKey}: ${value}`) });
 }
 
 // Object Compare Function
@@ -58,47 +58,47 @@ function drawBarPlot(idNum) {
     console.log("Bar: " + idNum);
 
     // Just grab the one ID we want
-    var samplesFilter = data["samples"].filter(item => item["id"] == idNum);
-    // console.log(`samplesFilter length: ${samplesFilter.length}`);
+    var samplesfilter = data["samples"].filter(item => item["id"] == idNum);
+    // console.log(`samplesfilter length: ${samplesfilter.length}`);
 
     // get values into arrays
-    var sample_values = samplesFilter[0].sample_values;
-    var otu_ids = samplesFilter[0].otu_ids;
-    var otu_labels = samplesFilter[0].otu_labels;
+    var samplevalues = samplesfilter[0].samplevalues;
+    var otuids = samplesfilter[0].otuids;
+    var otulabels = samplesfilter[0].otulabels;
 
     // Create an array of objects to sort so that all of the data is together
-    var combinedList = [];
-    for (var i=0; i < sample_values.length; i++) {
-        var otu_id = otu_ids[i];
-        var otu_text = "OTU " + otu_id.toString();
-        var combinedObject = {"sample_values": sample_values[i], "otu_ids": otu_text, "otu_labels": otu_labels[i]};
-        combinedList.push(combinedObject);
+    var combinedlist = [];
+    for (var i=0; i < samplevalues.length; i++) {
+        var otuid = otuids[i];
+        var otutext = "OTU " + otuid.toString();
+        var combinedobject = {"samplevalues": samplevalues[i], "otuids": otutext, "otulabels": otulabels[i]};
+        combinedlist.push(combinedobject);
     }
 
     // Sort and slice the list of objects
-    var sortedList = combinedList.sort(compareValues("sample_values", "desc"));
-    var slicedList = sortedList.slice(0, 10);
+    var sortedlist = combinedlist.sort(compareValues("samplevalues", "desc"));
+    var slicedlist = sortedlist.slice(0, 10);
 
     // Grab the text into arrays with map now
-    var sample_values_list = slicedList.map(item => item.sample_values).reverse();
-    // console.log(`sample_values_list: ${sample_values_list}`);
-    var otu_ids_list = slicedList.map(item => item.otu_ids).reverse();
-    // console.log(`otu_ids_list: ${otu_ids_list}`);
-    var otu_labels_list = slicedList.map(item => item.otu_labels).reverse();
-    // console.log(`otu_labels_list: ${otu_labels_list}`);
+    var samplevalueslist = slicedlist.map(item => item.samplevalues).reverse();
+    // console.log(`samplevalueslist: ${samplevalueslist}`);
+    var otuidslist = slicedlist.map(item => item.otuids).reverse();
+    // console.log(`otuidslist: ${otuidslist}`);
+    var otulabelslist = slicedlist.map(item => item.otulabels).reverse();
+    // console.log(`otulabelslist: ${otulabelslist}`);
 
     // Do the Plot
     // trace for the data
     var trace = {
         type: "bar",
-        y: otu_ids_list,
-        x: sample_values_list,
-        text: otu_labels_list,
+        y: otuidslist,
+        x: samplevalueslist,
+        text: otulabelslist,
         orientation: 'h'
     };
 
     // data
-    var traceData = [trace];
+    var tracedata = [trace];
 
     // Define the layout
     var layout = {
@@ -107,7 +107,7 @@ function drawBarPlot(idNum) {
         xaxis: { title: "Values"}
     };
 
-    Plotly.newPlot("bar", traceData, layout);
+    Plotly.newPlot("bar", tracedata, layout);
 }
 
 // Draw the bubble chart
@@ -116,23 +116,23 @@ function drawBubbleChart(idNum) {
     console.log("Bubble: " + idNum);
 
     // Just grab the one ID we want
-    var samplesFilter = data["samples"].filter(item => item["id"] == idNum);
+    var samplesfilter = data["samples"].filter(item => item["id"] == idNum);
 
     // trace for the data
     var trace = {
-        x: samplesFilter[0].otu_ids,
-        y: samplesFilter[0].sample_values,
+        x: samplesfilter[0].otuids,
+        y: samplesfilter[0].samplevalues,
         mode: 'markers',
-        text: samplesFilter[0].otu_labels,
+        text: samplesfilter[0].otulabels,
         marker: {
-                    color: samplesFilter[0].otu_ids,
-                    size: samplesFilter[0].sample_values,
+                    color: samplesfilter[0].otuids,
+                    size: samplesfilter[0].samplevalues,
                     colorscale: "Earth"
         }
     };
 
     // data
-    var traceData = [trace];
+    var tracedata = [trace];
 
     // Define the layout
     var layout = {
@@ -142,7 +142,7 @@ function drawBubbleChart(idNum) {
                     xaxis: { title: "OTU ID"}
     };
 
-    Plotly.newPlot('bubble', traceData, layout);
+    Plotly.newPlot('bubble', tracedata, layout);
 }
 
 // Draw the gauge chart
@@ -151,29 +151,29 @@ function drawGaugeChart(idNum) {
     console.log("Gauge: " + idNum);
 
     // Just grab the one ID we want
-    var metadataFilter = data.metadata.filter(item => item["id"] == idNum);
-    var level = metadataFilter[0].wfreq;
+    var metadatafilter = data.metadata.filter(item => item["id"] == idNum);
+    var level = metadatafilter[0].wfreq;
     var offset = [ 0, 0, 3, 3, 1, -0.5, -2, -3, 0, 0];
 
     // Calc the meter point
-    var degrees = 180 - (level * 20 + offset[level]);
+    var degrees180 = 180 - (level * 20 + offset[level]);
     var height = .6;
     var widthby2 = .05;
-    var radians = degrees * Math.PI / 180;
-    var radiansBaseL = (90 + degrees) * Math.PI / 180;
-    var radiansBaseR = (degrees - 90) * Math.PI / 180;
-    var xHead = height * Math.cos(radians);
-    var yHead = height * Math.sin(radians);
-    var xTail0 = widthby2 * Math.cos(radiansBaseL);
-    var yTail0 = widthby2 * Math.sin(radiansBaseL);
-    var xTail1 = widthby2 * Math.cos(radiansBaseR);
-    var yTail1 = widthby2 * Math.sin(radiansBaseR);
+    var radians = degrees180 * Math.PI / 180;
+    var radiansBaseL = (90 + degrees180) * Math.PI / 180;
+    var radiansBaseR = (degrees180 - 90) * Math.PI / 180;
+    var xhead = height * Math.cos(radians);
+    var yhead = height * Math.sin(radians);
+    var xtail0 = widthby2 * Math.cos(radiansBaseL);
+    var ytail0 = widthby2 * Math.sin(radiansBaseL);
+    var xtail1 = widthby2 * Math.cos(radiansBaseR);
+    var ytail1 = widthby2 * Math.sin(radiansBaseR);
 
     // Create the triangle for the meter
-    var triangle = `M ${xTail0} ${yTail0} L ${xTail1} ${yTail1} L ${xHead} ${yHead} Z`;
+    var triangle = `M ${xtail0} ${ytail0} L ${xtail1} ${ytail1} L ${xhead} ${yhead} Z`;
 
-    // Create the traceData variable
-    var traceData = [{
+    // Create the tracedata variable
+    var tracedata = [{
                         type: 'scatter',
                         x: [0],
                         y: [0],
@@ -203,7 +203,7 @@ function drawGaugeChart(idNum) {
                     xaxis: {zeroline: false, showticklabels: false, showgrid: false, range: [-1, 1]},
                     yaxis: {zeroline: false, showticklabels: false, showgrid: false, range: [-1, 1]}
     };
-    Plotly.newPlot('gauge', traceData, layout);
+    Plotly.newPlot('gauge', tracedata, layout);
 }
 
 // Initialization: do the load on the data, set up the menu, and draw the initial graphs
@@ -215,11 +215,11 @@ function initialization () {
         names = data.names;
 
         // Create the Test Subject ID No. Selector
-        names.forEach(element => { inputSelector.append("option").text(element).property("value", element); });
+        names.forEach(element => { testsubjectidnumber.append("option").text(element).property("value", element); });
 
         // Populate the Demo Info Panel
         var idNum = names[0];
-        populateDemoInfo(idNum);
+        populatedemoinfo(idNum);
 
         // Draw the Bar Plot
         drawBarPlot(idNum);
@@ -236,7 +236,7 @@ initialization();
 
 function optionChanged(idNum) {
     // Update the Demographic Info Panel
-    populateDemoInfo(idNum);
+    populatedemoinfo(idNum);
 
     // Draw the Bar Plot
     drawBarPlot(idNum);
