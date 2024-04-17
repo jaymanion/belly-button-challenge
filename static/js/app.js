@@ -176,15 +176,14 @@ function drawGaugeChart(idNum) {
         text: level,
         hoverinfo: 'text+name'
     }, {
-        values: [180 / 9, 180 / 9, 180 / 9, 180 / 9, 180 / 9, 180 / 9, 180 / 9, 180 / 9, 180 / 9, 180],
+        values: [180 / 9, 180 / 9, 180 / 9, 180 / 9, 180 / 9, 180 / 9, 180 / 9, 180 / 9, 180 / 9, 0], // Remove the color for the empty label
         rotation: 90,
-        text: ['8-9', '7-8', '6-7', '5-6', '4-5', '3-4', '2-3', '1-2', '0-1', ''],
+        text: ['8-9', '7-8', '6-7', '5-6', '4-5', '3-4', '2-3', '1-2', '0-1', ''], // Keep the labels
         textinfo: 'text',
         textposition: 'inside',
         marker: {
             colors: ['#a8e6cf', '#dcedc1', '#ffd3b5', '#ffaaa6', '#ff8c94', '#db3069', '#703f5c', '#001e1d', '#1d4350', '#232931']
         },
-        labels: ['8-9', '7-8', '6-7', '5-6', '4-5', '3-4', '2-3', '1-2', '0-1', ''],
         hoverinfo: 'label',
         hole: .5,
         type: 'pie',
@@ -216,6 +215,7 @@ function drawGaugeChart(idNum) {
     };
     Plotly.newPlot('gauge', trace_data3, layout);
 }
+
 
 // initializing graphs with Data
 function initialization() {
