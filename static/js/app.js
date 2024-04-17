@@ -1,24 +1,24 @@
-// Global Utility Variables
+// create a data set
 var data = {};
 
-// Global HTML selectors
+// selectors
 var testsubjectidnumber = d3.select("#selDataset");
 var demoinfo = d3.select("#sample-metadata");
 
 // Function titleCase from this website:
 // https://www.freecodecamp.org/news/three-ways-to-title-case-a-sentence-in-javascript-676a9175eb27/
-function titleCase(str) {
-    return str.toLowerCase().split(' ').map(function(word) {
-        return (word.charAt(0).toUpperCase() + word.slice(1));
-    }).join(' ');
-}
+//function titleCase(str) {
+//    return str.toLowerCase().split(' ').map(function(word) {
+//        return (word.charAt(0).toUpperCase() + word.slice(1));
+//    }).join(' ');
+//}
 
-// Populate the Demographic Info panel
+// Demographic Info panel population
 function populatedemoinfo(idNum) {
     // Log a change
     console.log("Pop: " + idNum);
 
-    // Just grab the one ID we want
+    // Choose ID
     var metadatafilter = data.metadata.filter(item => item["id"] == idNum);
     console.log(`metaFilter length: ${metadatafilter.length}`);
 
@@ -57,16 +57,15 @@ function drawBarPlot(idNum) {
     // Log a change
     console.log("Bar: " + idNum);
 
-    // Just grab the one ID we want
+    // Choose ID
     var samplesfilter = data["samples"].filter(item => item["id"] == idNum);
-    // console.log(`samplesfilter length: ${samplesfilter.length}`);
 
-    // get values into arrays
+    // Set to arrays
     var samplevalues = samplesfilter[0].samplevalues;
     var otuids = samplesfilter[0].otuids;
     var otulabels = samplesfilter[0].otulabels;
 
-    // Create an array of objects to sort so that all of the data is together
+    // all data array
     var combinedlist = [];
     for (var i=0; i < samplevalues.length; i++) {
         var otuid = otuids[i];
@@ -75,7 +74,7 @@ function drawBarPlot(idNum) {
         combinedlist.push(combinedobject);
     }
 
-    // Sort and slice the list of objects
+    // Sort/slice the list of objects
     var sortedlist = combinedlist.sort(compareValues("samplevalues", "desc"));
     var slicedlist = sortedlist.slice(0, 10);
 
@@ -87,7 +86,7 @@ function drawBarPlot(idNum) {
     var otulabelslist = slicedlist.map(item => item.otulabels).reverse();
     // console.log(`otulabelslist: ${otulabelslist}`);
 
-    // Do the Plot
+    // Plot
     // trace for the data
     var trace = {
         type: "bar",
@@ -100,7 +99,7 @@ function drawBarPlot(idNum) {
     // data
     var tracedata = [trace];
 
-    // Define the layout
+    // Layout
     var layout = {
         title: "Top 10 OTUs Found",
         yaxis: { title: "OTU Labels" },
@@ -110,12 +109,12 @@ function drawBarPlot(idNum) {
     Plotly.newPlot("bar", tracedata, layout);
 }
 
-// Draw the bubble chart
+// Bubble chart
 function drawBubbleChart(idNum) {
     // Log a change
     console.log("Bubble: " + idNum);
 
-    // Just grab the one ID we want
+    // Choose ID
     var samplesfilter = data["samples"].filter(item => item["id"] == idNum);
 
     // trace for the data
@@ -134,7 +133,7 @@ function drawBubbleChart(idNum) {
     // data
     var tracedata = [trace];
 
-    // Define the layout
+    // Layout
     var layout = {
                     showlegend: false,
                     height: 600,
@@ -145,17 +144,17 @@ function drawBubbleChart(idNum) {
     Plotly.newPlot('bubble', tracedata, layout);
 }
 
-// Draw the gauge chart
+// Gauge chart
 function drawGaugeChart(idNum) {
     // Log a change
     console.log("Gauge: " + idNum);
 
-    // Just grab the one ID we want
+    // Choose ID
     var metadatafilter = data.metadata.filter(item => item["id"] == idNum);
     var level = metadatafilter[0].wfreq;
     var offset = [ 0, 0, 3, 3, 1, -0.5, -2, -3, 0, 0];
 
-    // Calc the meter point
+    // Calculate the meter point
     var degrees180 = 180 - (level * 20 + offset[level]);
     var height = .6;
     var widthby2 = .05;
@@ -196,7 +195,7 @@ function drawGaugeChart(idNum) {
                         showlegend: false
     }];
 
-    // Define the Layout
+    // Layout
     var layout = {
                     shapes:[{ type: 'path', path: triangle, fillcolor: '#850000', line: { color: '#850000' } }],
                     title: '<b>Belly Button Wash Frequency</b><br>Scrubs per Week',
@@ -221,29 +220,21 @@ function initialization () {
         var idNum = names[0];
         populatedemoinfo(idNum);
 
-        // Draw the Bar Plot
+        // Draw the graphs
         drawBarPlot(idNum);
-
-        // Draw the Bubble Chart
-        drawBubbleChart(idNum);
-
-        // Draw the Gauge Chart
-        drawGaugeChart(idNum);
+		drawBubbleChart(idNum);
+		drawGaugeChart(idNum);
     });
 }
 
 initialization();
 
 function optionChanged(idNum) {
-    // Update the Demographic Info Panel
+    // Update the Demo Info Panel
     populatedemoinfo(idNum);
 
-    // Draw the Bar Plot
+    // Draw the graphs
     drawBarPlot(idNum);
-
-    // Draw the Bubble Chart
-    drawBubbleChart(idNum);
-
-    // Draw the Gauge Chart
-    drawGaugeChart(idNum);
+	drawBubbleChart(idNum);
+	drawGaugeChart(idNum);
 };
