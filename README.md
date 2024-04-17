@@ -1,5 +1,5 @@
 # belly-button-challenge
-use this link to review html - https://jaymanion.github.io/belly-button-challenge/
+use this link to review html - [https://jaymanion.github.io/belly-button-challenge/](https://jaymanion.github.io/belly-button-challenge/)
 
 
 Background
