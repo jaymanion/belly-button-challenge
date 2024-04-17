@@ -175,7 +175,7 @@ function drawGaugeChart(idNum) {
         name: 'frequency',
         text: level.toString(), // Display frequency as text
         textposition: 'middle center', // Position text in the middle
-        hoverinfo: 'text+name'
+        //hoverinfo: 'text+name'
     }, {
         values: [180 / 9, 180 / 9, 180 / 9, 180 / 9, 180 / 9, 180 / 9, 180 / 9, 180 / 9, 180 / 9, 180],
         rotation: 90,
