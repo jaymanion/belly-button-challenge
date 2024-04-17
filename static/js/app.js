@@ -7,11 +7,11 @@ var demoinfo = d3.select("#sample-metadata");
 
 // Function titleCase from this website:
 // https://www.freecodecamp.org/news/three-ways-to-title-case-a-sentence-in-javascript-676a9175eb27/
-//function titleCase(str) {
-//    return str.toLowerCase().split(' ').map(function(word) {
-//        return (word.charAt(0).toUpperCase() + word.slice(1));
-//    }).join(' ');
-//}
+function titleCase(str) {
+    return str.toLowerCase().split(' ').map(function(word) {
+        return (word.charAt(0).toUpperCase() + word.slice(1));
+    }).join(' ');
+}
 
 // Demographic Info panel population
 function populatedemoinfo(idNum) {
