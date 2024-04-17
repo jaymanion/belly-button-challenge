@@ -1,5 +1,46 @@
-// Define a consistent color palette
-var colorPalette = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'];
+// initial setup
+var data = {};
+
+var input = d3.select("#selDataset");
+var demo_info_panel = d3.select("#sample-metadata");
+
+// Function titleCase from this website:
+// https://www.freecodecamp.org/news/three-ways-to-title-case-a-sentence-in-javascript-676a9175eb27/
+function titleCase(str) {
+    return str.toLowerCase().split(' ').map(function(word) {
+        return (word.charAt(0).toUpperCase() + word.slice(1));
+    }).join(' ');
+}
+
+// populating the demo_info_panel
+function populateDemoInfo(idNum) {
+    console.log("Populate: " + idNum);
+    var metadata_filter = data.metadata.filter(item => item["id"] == idNum);
+    console.log(`metadata_filter length: ${metadata_filter.length}`);
+    demo_info_panel.html("");
+    Object.entries(metadata_filter[0]).forEach(([key, value]) => {
+        var titleKey = titleCase(key);
+        demo_info_panel.append("h6").text(`${titleKey}: ${value}`)
+    });
+}
+
+// using a comparing function
+function compareValues(key, order = 'asc') {
+    return function innerSort(a, b) {
+        if (!a.hasOwnProperty(key) || !b.hasOwnProperty(key)) {
+            return 0;
+        }
+        const varA = (typeof a[key] === 'string') ? a[key].toUpperCase() : a[key];
+        const varB = (typeof b[key] === 'string') ? b[key].toUpperCase() : b[key];
+        let comparison = 0;
+        if (varA > varB) {
+            comparison = 1;
+        } else if (varA < varB) {
+            comparison = -1;
+        }
+        return (order === 'desc') ? (comparison * -1) : comparison;
+    };
+}
 
 // creating bar plot
 function drawBarPlot(idNum) {
@@ -43,7 +84,7 @@ function drawBarPlot(idNum) {
         text: otu_labels_list,
         orientation: 'h',
         marker: {
-            color: colorPalette // Use the consistent color palette here
+            color: ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
         }
     };
 
@@ -74,14 +115,11 @@ function drawBubbleChart(idNum) {
         mode: 'markers',
         text: samples_filter2[0].otu_labels,
         marker: {
-            color: samples_filter2[0].otu_ids, // You can change this property according to your data or use a consistent color if appropriate
+            color: samples_filter2[0].otu_ids,
             size: samples_filter2[0].sample_values,
             colorscale: "Earth"
         }
     };
-
-    // Use the consistent color palette for marker color
-    trace2.marker.color = colorPalette.slice(0, samples_filter2[0].otu_ids.length);
 
     // data
     var trace_data2 = [trace2];
@@ -135,7 +173,7 @@ function drawGaugeChart(idNum) {
         },
         showlegend: false,
         name: 'frequency',
-		text: level,
+        text: level,
         hoverinfo: 'text+name'
     }, {
         values: [180 / 9, 180 / 9, 180 / 9, 180 / 9, 180 / 9, 180 / 9, 180 / 9, 180 / 9, 180 / 9, 180],
@@ -144,7 +182,7 @@ function drawGaugeChart(idNum) {
         textinfo: 'text',
         textposition: 'inside',
         marker: {
-            colors: colorPalette // Use the consistent color palette here
+            colors: ['#e5f5e0', '#c7e9c0', '#a1d99b', '#74c476', '#41ab5d', '#238b45', '#006d2c', '#00441b', '#a8a8a8', '#FFFFFF'] // Matching shades
         },
         labels: ['8-9', '7-8', '6-7', '5-6', '4-5', '3-4', '2-3', '1-2', '0-1', ''],
         hoverinfo: 'label',
@@ -178,3 +216,42 @@ function drawGaugeChart(idNum) {
     };
     Plotly.newPlot('gauge', trace_data3, layout);
 }
+
+
+
+// initializing graphs with Data
+function initialization() {
+    d3.json("./data/samples.json").then(function(jsonData) {
+        console.log("Gathering Data");
+        data = jsonData;
+        console.log("Keys: " + Object.keys(data));
+        names = data.names;
+        console.log("Loaded JSON Data:", data);
+
+        // Test Subject ID No. Selector
+        names.forEach(element => {
+            input.append("option").text(element).property("value", element);
+        });
+
+        // Update the Demographic Info Panel
+        var idNum = names[0];
+        populateDemoInfo(idNum);
+
+        // Draw graphs
+        drawBarPlot(idNum);
+        drawBubbleChart(idNum);
+        drawGaugeChart(idNum);
+    });
+}
+
+initialization();
+
+function optionChanged(idNum) {
+    // Update the Demographic Info Panel
+    populateDemoInfo(idNum);
+
+    // Draw graphs
+    drawBarPlot(idNum);
+    drawBubbleChart(idNum);
+    drawGaugeChart(idNum);
+};
