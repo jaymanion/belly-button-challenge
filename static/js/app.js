@@ -174,6 +174,7 @@ function drawGaugeChart(idNum) {
         showlegend: false,
         name: 'frequency',
         text: level.toString(), // Display frequency as text
+        textposition: 'middle center', // Position text in the middle
         hoverinfo: 'text+name'
     }, {
         values: [180 / 9, 180 / 9, 180 / 9, 180 / 9, 180 / 9, 180 / 9, 180 / 9, 180 / 9, 180 / 9, 180],
@@ -182,7 +183,7 @@ function drawGaugeChart(idNum) {
         textinfo: 'text',
         textposition: 'inside',
         marker: {
-            colors: ['#e5f5e0', '#c7e9c0', '#a1d99b', '#74c476', '#41ab5d', '#238b45', '#006d2c', '#00441b', '#a8a8a8', '#FFFFFF',] // Matching shades
+            colors: ['#e5f5e0', '#c7e9c0', '#a1d99b', '#74c476', '#41ab5d', '#238b45', '#006d2c', '#00441b', '#a8a8a8', '#FFFFFF'] // Matching shades
         },
         labels: ['8-9', '7-8', '6-7', '5-6', '4-5', '3-4', '2-3', '1-2', '0-1', ''],
         hoverinfo: 'label',
@@ -216,6 +217,7 @@ function drawGaugeChart(idNum) {
     };
     Plotly.newPlot('gauge', trace_data3, layout);
 }
+
 
 
 // initializing graphs with Data
