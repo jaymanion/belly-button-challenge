@@ -117,7 +117,7 @@ function drawBubbleChart(idNum) {
         marker: {
             color: samples_filter2[0].otu_ids,
             size: samples_filter2[0].sample_values,
-            colorscale: "Earth"
+            colorscale: "Viridis" // Use a more vibrant color scale like Viridis
         }
     };
 
