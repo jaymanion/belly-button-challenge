@@ -145,56 +145,39 @@ function drawBubbleChart(idNum) {
     Plotly.newPlot('bubble', traceData, layout);
 }
 
-// Draw the gauge chart
-function drawGaugeChart(idNum) {
-    // Log a change
-    console.log("Gauge: " + idNum);
+// ADVANCED CHALLENGE: GAUGE CHART
+		// Get the washing frequency value for the default test ID
+		var wfreqDefault = demoDefault.wfreq;
 
-    // Just grab the one ID we want
-    var metadataFilter = data.metadata.filter(item => item["id"] == idNum);
-    var level = metadataFilter[0].wfreq;
-    var offset = [ 0, 0, 3, 3, 1, -0.5, -2, -3, 0, 0];
+		var gaugeData = [
+			{
+				domain: { x: [0, 1], y: [0, 1] },
+				value: wfreqDefault,
+				title: {text: '<b>Belly Button Washing Frequency</b> <br> Scrubs per week'},
+				type: "indicator",
+				mode: "gauge+number",
+				gauge: {
+					axis: { range: [null, 9] },
+					steps: [
+						{ range: [0, 1], color: 'rgb(248, 243, 236)' },
+						{ range: [1, 2], color: 'rgb(244, 241, 229)' },
+						{ range: [2, 3], color: 'rgb(233, 230, 202)' },
+						{ range: [3, 4], color: 'rgb(229, 231, 179)' },
+						{ range: [4, 5], color: 'rgb(213, 228, 157)' },
+						{ range: [5, 6], color: 'rgb(183, 204, 146)' },
+						{ range: [6, 7], color: 'rgb(140, 191, 136)' },
+						{ range: [7, 8], color: 'rgb(138, 187, 143)' },
+						{ range: [8, 9], color: 'rgb(133, 180, 138)' },
+					],
+				}
+			}
+		];
+		
+		var gaugeLayout = { width: 600, height: 450, margin: { t: 0, b: 0 } };
+		
+		Plotly.newPlot('gauge', gaugeData, gaugeLayout);
+	}
 
-    // Calc the meter point
-    var degrees = 180 - (level * 20 + offset[level]);
-    var height = .6;
-    var widthby2 = .05;
-    var radians = degrees * Math.PI / 180;
-    var radiansBaseL = (90 + degrees) * Math.PI / 180;
-    var radiansBaseR = (degrees - 90) * Math.PI / 180;
-    var xHead = height * Math.cos(radians);
-    var yHead = height * Math.sin(radians);
-    var xTail0 = widthby2 * Math.cos(radiansBaseL);
-    var yTail0 = widthby2 * Math.sin(radiansBaseL);
-    var xTail1 = widthby2 * Math.cos(radiansBaseR);
-    var yTail1 = widthby2 * Math.sin(radiansBaseR);
-
-    // Create the triangle for the meter
-    var triangle = `M ${xTail0} ${yTail0} L ${xTail1} ${yTail1} L ${xHead} ${yHead} Z`;
-
-    // Create the traceData variable
-    var traceData = [{
-                        type: 'scatter',
-                        x: [0],
-                        y: [0],
-                        marker: {size: 16, color: '#850000'},
-                        showlegend: false,
-                        name: 'frequency',
-                        text: level,
-                        hoverinfo: 'text+name'},
-                    {   values: [180/9, 180/9, 180/9, 180/9, 180/9, 180/9, 180/9, 180/9, 180/9, 180],
-                        rotation: 90,
-                        text: ['10','9','8','7', '6', '5', '4', '3', '2', '1'],
-                        textinfo: 'text',
-                        textposition: 'inside',
-                        marker: {colors: [  '#84B589', '#89BB8F', '#8CBF88', '#B7CC92', '#D5E49D',
-                                            '#E5E7B3', '#E9E6CA', '#F4F1E5', '#F8F3EC', '#FFFFFF',]},
-                        labels: ['10','9','8','7', '6', '5', '4', '3', '2', '1'],
-                        hoverinfo: 'label',
-                        hole: .5,
-                        type: 'pie',
-                        showlegend: false
-    }];
 
     // Define the Layout
     var layout = {
