@@ -1,185 +1,249 @@
-// Use D3 fetch to read the JSON file
-// The data from the JSON file is arbitrarily named importedData as the argument
-d3.json("data/samples.json").then((importedData) => {
+// Global Utility Variables
+var data = {};
 
-	console.log(importedData);
+// Global HTML selectors
+var inputSelector = d3.select("#selDataset");
+var panelDemoInfo = d3.select("#sample-metadata");
 
-	var data = importedData;
+// Function titleCase from this website:
+// https://www.freecodecamp.org/news/three-ways-to-title-case-a-sentence-in-javascript-676a9175eb27/
+function titleCase(str) {
+    return str.toLowerCase().split(' ').map(function(word) {
+        return (word.charAt(0).toUpperCase() + word.slice(1));
+    }).join(' ');
+}
 
-	// Dynamically add test Subject ID No. to the dropdown menus
-	var names = data.names;
+// Populate the Demographic Info panel
+function populateDemoInfo(idNum) {
+    // Log a change
+    console.log("Pop: " + idNum);
 
-	names.forEach((name) => {
-		d3.select("#selDataset").append("option").text(name);
-	})
+    // Just grab the one ID we want
+    var metadataFilter = data.metadata.filter(item => item["id"] == idNum);
+    console.log(`metaFilter length: ${metadataFilter.length}`);
 
-	// Initializes the page with default plots
-	function init() {
+    // Clear out the data first
+    panelDemoInfo.html("");
 
-		// Choose data for test ID No. 940 plotted as default
-		defaultDataset = data.samples.filter(sample => sample.id === "940")[0];
-		console.log(defaultDataset);
+    // Fill it back in
+    Object.entries(metadataFilter[0]).forEach(([key, value]) => { var titleKey = titleCase(key); panelDemoInfo.append("h6").text(`${titleKey}: ${value}`) });
+}
 
-		// Select all sample_values, otu_ids and otu_labels of the selected test ID
-		allSampleValuesDefault = defaultDataset.sample_values;
-		allOtuIdsDefault = defaultDataset.otu_ids;
-		allOtuLabelsDefault = defaultDataset.otu_labels;
+// Object Compare Function
+function compareValues(key, order = 'asc') {
+    return function innerSort(a, b) {
+        if (!a.hasOwnProperty(key) || !b.hasOwnProperty(key)) {
+            // property doesn't exist on either object
+            return 0;
+        }
+        const varA = (typeof a[key] === 'string')
+            ? a[key].toUpperCase() : a[key];
+        const varB = (typeof b[key] === 'string')
+            ? b[key].toUpperCase() : b[key];
+        let comparison = 0;
+        if (varA > varB) {
+            comparison = 1;
+        } else if (varA < varB) {
+            comparison = -1;
+        }
+        return (
+            (order === 'desc') ? (comparison * -1) : comparison
+        );
+    };
+}
 
-		// Select the top 10 OTUs for the ID with their sample_values, otu_ids and otu_labels
-		sampleValuesDefault = allSampleValuesDefault.slice(0, 10).reverse();
-		otuIdsDefault = allOtuIdsDefault.slice(0, 10).reverse();
-		otuLabelsDefault = allOtuLabelsDefault.slice(0, 10).reverse();
+// Draw the bar plot
+function drawBarPlot(idNum) {
+    // Log a change
+    console.log("Bar: " + idNum);
 
-		console.log(sampleValuesDefault);
-		console.log(otuIdsDefault);
-		console.log(otuLabelsDefault);
+    // Just grab the one ID we want
+    var samplesFilter = data["samples"].filter(item => item["id"] == idNum);
+    // console.log(`samplesFilter length: ${samplesFilter.length}`);
 
-		// BAR CHART
-		// Add trace for the default Data
-		var trace1 = {
-			x: sampleValuesDefault,
-			y: otuIdsDefault.map(outId => `OTU ${outId}`),
-			text: otuLabelsDefault,
-			type: "bar",
-			orientation: "h"
-		};
+    // get values into arrays
+    var sample_values = samplesFilter[0].sample_values;
+    var otu_ids = samplesFilter[0].otu_ids;
+    var otu_labels = samplesFilter[0].otu_labels;
 
-		// data
-		var barData = [trace1];
+    // Create an array of objects to sort so that all of the data is together
+    var combinedList = [];
+    for (var i=0; i < sample_values.length; i++) {
+        var otu_id = otu_ids[i];
+        var otu_text = "OTU " + otu_id.toString();
+        var combinedObject = {"sample_values": sample_values[i], "otu_ids": otu_text, "otu_labels": otu_labels[i]};
+        combinedList.push(combinedObject);
+    }
 
-		// Apply the group bar mode to the layout
-		var barlayout = {
-			title: `<b>Top 10 OTUs found in selected Test Subject ID No<b>`,
-			xaxis: { title: "Sample Value"},
-			yaxis: { title: "OTU ID"},
-			autosize: false,
-			width: 450,
-			height: 600
-		}
+    // Sort and slice the list of objects
+    var sortedList = combinedList.sort(compareValues("sample_values", "desc"));
+    var slicedList = sortedList.slice(0, 10);
 
-		// Render the plot to the div tag with id "bar"
-		Plotly.newPlot("bar", barData, barlayout);
+    // Grab the text into arrays with map now
+    var sample_values_list = slicedList.map(item => item.sample_values).reverse();
+    // console.log(`sample_values_list: ${sample_values_list}`);
+    var otu_ids_list = slicedList.map(item => item.otu_ids).reverse();
+    // console.log(`otu_ids_list: ${otu_ids_list}`);
+    var otu_labels_list = slicedList.map(item => item.otu_labels).reverse();
+    // console.log(`otu_labels_list: ${otu_labels_list}`);
 
-		// BUBBLE CHART
-		var trace2 = {
-			x: allOtuIdsDefault,
-			y: allSampleValuesDefault,
-			text: allOtuLabelsDefault,
-			mode: 'markers',
-			marker: {
-				color: allOtuIdsDefault,
-				size: allSampleValuesDefault
-			}
-		};
-		
-		var bubbleData = [trace2];
-		
-		var bubbleLayout = {
-			title: '<b>Bubble Chart displaying sample values of OTU IDs of the selected individual<b>',
-			xaxis: { title: "OTU ID"},
-			yaxis: { title: "Sample Value"}, 
-			showlegend: false,
-		};
-		
-		Plotly.newPlot('bubble', bubbleData, bubbleLayout);
+    // Do the Plot
+    // trace for the data
+    var trace = {
+        type: "bar",
+        y: otu_ids_list,
+        x: sample_values_list,
+        text: otu_labels_list,
+        orientation: 'h'
+    };
 
-		// DEMOGRAPHIC INFO
-		demoDefault = data.metadata.filter(sample => sample.id === 940)[0];
-		console.log(demoDefault);
+    // data
+    var traceData = [trace];
 
-		// Display each key-value pair from the metadata JSON object
-		Object.entries(demoDefault).forEach(
-			([key, value]) => d3.select("#sample-metadata")
-													.append("p").text(`${key.toUpperCase()}: ${value}`));
+    // Define the layout
+    var layout = {
+        title: "Top 10 OTUs Found",
+        yaxis: { title: "OTU Labels" },
+        xaxis: { title: "Values"}
+    };
 
-		// ADVANCED CHALLENGE: GAUGE CHART
-		// Get the washing frequency value for the default test ID
-		var wfreqDefault = demoDefault.wfreq;
+    Plotly.newPlot("bar", traceData, layout);
+}
 
-		var gaugeData = [
-			{
-				domain: { x: [0, 1], y: [0, 1] },
-				value: wfreqDefault,
-				title: {text: '<b>Belly Button Washing Frequency</b> <br> Scrubs per week'},
-				type: "indicator",
-				mode: "gauge+number",
-				gauge: {
-					axis: { range: [null, 9] },
-					steps: [
-						{ range: [0, 1], color: 'rgb(248, 243, 236)' },
-						{ range: [1, 2], color: 'rgb(244, 241, 229)' },
-						{ range: [2, 3], color: 'rgb(233, 230, 202)' },
-						{ range: [3, 4], color: 'rgb(229, 231, 179)' },
-						{ range: [4, 5], color: 'rgb(213, 228, 157)' },
-						{ range: [5, 6], color: 'rgb(183, 204, 146)' },
-						{ range: [6, 7], color: 'rgb(140, 191, 136)' },
-						{ range: [7, 8], color: 'rgb(138, 187, 143)' },
-						{ range: [8, 9], color: 'rgb(133, 180, 138)' },
-					],
-				}
-			}
-		];
-		
-		var gaugeLayout = { width: 600, height: 450, margin: { t: 0, b: 0 } };
-		
-		Plotly.newPlot('gauge', gaugeData, gaugeLayout);
-	}
+// Draw the bubble chart
+function drawBubbleChart(idNum) {
+    // Log a change
+    console.log("Bubble: " + idNum);
 
-	init();
+    // Just grab the one ID we want
+    var samplesFilter = data["samples"].filter(item => item["id"] == idNum);
 
+    // trace for the data
+    var trace = {
+        x: samplesFilter[0].otu_ids,
+        y: samplesFilter[0].sample_values,
+        mode: 'markers',
+        text: samplesFilter[0].otu_labels,
+        marker: {
+                    color: samplesFilter[0].otu_ids,
+                    size: samplesFilter[0].sample_values,
+                    colorscale: "Earth"
+        }
+    };
 
-	// Call updateBar() when a change takes place to the DOM
-	d3.selectAll("#selDataset").on("change", updatePlot);
+    // data
+    var traceData = [trace];
 
-	// 2. Create a horizontal bar chart with a dropdown menu to display the top 10 OTUs found in that individual.
-	// This function is called when a dropdown menu item is selected
-	function updatePlot() {
+    // Define the layout
+    var layout = {
+                    showlegend: false,
+                    height: 600,
+                    width: 1500,
+                    xaxis: { title: "OTU ID"}
+    };
 
-		// Use D3 to select the dropdown menu
-			var inputElement = d3.select("#selDataset");
+    Plotly.newPlot('bubble', traceData, layout);
+}
 
-		// Assign the value of the dropdown menu option to a variable
-			var inputValue = inputElement.property("value");
-			console.log(inputValue);
+// Draw the gauge chart
+function drawGaugeChart(idNum) {
+    // Log a change
+    console.log("Gauge: " + idNum);
 
-		// Filter the dataset based on inputValue ID
-			dataset = data.samples.filter(sample => sample.id === inputValue)[0];
-			console.log(dataset);
+    // Just grab the one ID we want
+    var metadataFilter = data.metadata.filter(item => item["id"] == idNum);
+    var level = metadataFilter[0].wfreq;
+    var offset = [ 0, 0, 3, 3, 1, -0.5, -2, -3, 0, 0];
 
-		// Select all sample_values, otu_ids and otu_labels of the selected test ID
-			allSampleValues = dataset.sample_values;
-			allOtuIds = dataset.otu_ids;
-			allOtuLabels = dataset.otu_labels;
+    // Calc the meter point
+    var degrees = 180 - (level * 20 + offset[level]);
+    var height = .6;
+    var widthby2 = .05;
+    var radians = degrees * Math.PI / 180;
+    var radiansBaseL = (90 + degrees) * Math.PI / 180;
+    var radiansBaseR = (degrees - 90) * Math.PI / 180;
+    var xHead = height * Math.cos(radians);
+    var yHead = height * Math.sin(radians);
+    var xTail0 = widthby2 * Math.cos(radiansBaseL);
+    var yTail0 = widthby2 * Math.sin(radiansBaseL);
+    var xTail1 = widthby2 * Math.cos(radiansBaseR);
+    var yTail1 = widthby2 * Math.sin(radiansBaseR);
 
-		// Select the top 10 OTUs for the ID with their sample_values, otu_ids and otu_labels
-		top10Values = allSampleValues.slice(0, 10).reverse();
-		top10Ids = allOtuIds.slice(0, 10).reverse();
-		top10Labels = allOtuLabels.slice(0, 10).reverse();
+    // Create the triangle for the meter
+    var triangle = `M ${xTail0} ${yTail0} L ${xTail1} ${yTail1} L ${xHead} ${yHead} Z`;
 
-		// BAR CHART
-		Plotly.restyle("bar", "x", [top10Values]);
-		Plotly.restyle("bar", "y", [top10Ids.map(outId => `OTU ${outId}`)]);
-		Plotly.restyle("bar", "text", [top10Labels]);
+    // Create the traceData variable
+    var traceData = [{
+                        type: 'scatter',
+                        x: [0],
+                        y: [0],
+                        marker: {size: 16, color: '#850000'},
+                        showlegend: false,
+                        name: 'frequency',
+                        text: level,
+                        hoverinfo: 'text+name'},
+                    {   values: [180/9, 180/9, 180/9, 180/9, 180/9, 180/9, 180/9, 180/9, 180/9, 180],
+                        rotation: 90,
+                        text: ['10','9','8','7', '6', '5', '4', '3', '2', '1'],
+                        textinfo: 'text',
+                        textposition: 'inside',
+                        marker: {colors: [  '#84B589', '#89BB8F', '#8CBF88', '#B7CC92', '#D5E49D',
+                                            '#E5E7B3', '#E9E6CA', '#F4F1E5', '#F8F3EC', '#FFFFFF',]},
+                        labels: ['10','9','8','7', '6', '5', '4', '3', '2', '1'],
+                        hoverinfo: 'label',
+                        hole: .5,
+                        type: 'pie',
+                        showlegend: false
+    }];
 
-		// BUBBLE CHART
-		Plotly.restyle('bubble', "x", [allOtuIds]);
-		Plotly.restyle('bubble', "y", [allSampleValues]);
-		Plotly.restyle('bubble', "text", [allOtuLabels]);
-		Plotly.restyle('bubble', "marker.color", [allOtuIds]);
-		Plotly.restyle('bubble', "marker.size", [allSampleValues]);
+    // Define the Layout
+    var layout = {
+                    shapes:[{ type: 'path', path: triangle, fillcolor: '#850000', line: { color: '#850000' } }],
+                    title: '<b>Belly Button Wash Frequency</b><br>Scrubs per Week',
+                    xaxis: {zeroline: false, showticklabels: false, showgrid: false, range: [-1, 1]},
+                    yaxis: {zeroline: false, showticklabels: false, showgrid: false, range: [-1, 1]}
+    };
+    Plotly.newPlot('gauge', traceData, layout);
+}
 
-		// DEMOGRAPHIC INFO
-		metainfo = data.metadata.filter(sample => sample.id == inputValue)[0];
+// Initialization: do the load on the data, set up the menu, and draw the initial graphs
+function initialization () {
+    d3.json("./data/samples.json").then(function(jsonData) {
+        console.log("Gathering Data");
+        data = jsonData;
+        console.log("Keys: " + Object.keys(data));
+        names = data.names;
 
-		// Clear out current contents in the panel
-		d3.select("#sample-metadata").html("");
+        // Create the Test Subject ID No. Selector
+        names.forEach(element => { inputSelector.append("option").text(element).property("value", element); });
 
-		// Display each key-value pair from the metadata JSON object
-		Object.entries(metainfo).forEach(([key, value]) => d3.select("#sample-metadata").append("p").text(`${key}: ${value}`));
+        // Populate the Demo Info Panel
+        var idNum = names[0];
+        populateDemoInfo(idNum);
 
-		// ADVANCED CHALLENGE: GAUGE CHART
-		var wfreq = metainfo.wfreq;
+        // Draw the Bar Plot
+        drawBarPlot(idNum);
 
-		Plotly.restyle('gauge', "value", wfreq);
-	}
-});
+        // Draw the Bubble Chart
+        drawBubbleChart(idNum);
+
+        // Draw the Gauge Chart
+        drawGaugeChart(idNum);
+    });
+}
+
+initialization();
+
+function optionChanged(idNum) {
+    // Update the Demographic Info Panel
+    populateDemoInfo(idNum);
+
+    // Draw the Bar Plot
+    drawBarPlot(idNum);
+
+    // Draw the Bubble Chart
+    drawBubbleChart(idNum);
+
+    // Draw the Gauge Chart
+    drawGaugeChart(idNum);
+};
