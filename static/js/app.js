@@ -178,3 +178,39 @@ function drawGaugeChart(idNum) {
     };
     Plotly.newPlot('gauge', trace_data3, layout);
 }
+// initializing graphs with Data
+function initialization() {
+    d3.json("./data/samples.json").then(function(jsonData) {
+        console.log("Gathering Data");
+        data = jsonData;
+        console.log("Keys: " + Object.keys(data));
+        names = data.names;
+        console.log("Loaded JSON Data:", data);
+
+        // Test Subject ID No. Selector
+        names.forEach(element => {
+            input.append("option").text(element).property("value", element);
+        });
+
+        // Update the Demographic Info Panel
+        var idNum = names[0];
+        populateDemoInfo(idNum);
+
+        // Draw graphs
+        drawBarPlot(idNum);
+        drawBubbleChart(idNum);
+        drawGaugeChart(idNum);
+    });
+}
+
+initialization();
+
+function optionChanged(idNum) {
+    // Update the Demographic Info Panel
+    populateDemoInfo(idNum);
+
+    // Draw graphs
+    drawBarPlot(idNum);
+    drawBubbleChart(idNum);
+    drawGaugeChart(idNum);
+};
