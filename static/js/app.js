@@ -117,7 +117,7 @@ function drawBubbleChart(idNum) {
         marker: {
             color: samples_filter2[0].otu_ids,
             size: samples_filter2[0].sample_values,
-            colorscale: "Viridis" // Use a more vibrant color scale like Viridis
+            colorscale: "Earth"
         }
     };
 
@@ -182,7 +182,7 @@ function drawGaugeChart(idNum) {
         textinfo: 'text',
         textposition: 'inside',
         marker: {
-            colors: ['#a8e6cf', '#dcedc1', '#ffd3b5', '#ffaaa6', '#ff8c94', '#db3069', '#703f5c', '#001e1d', '#1d4350', '#ffffff']
+            colors: ['#a8e6cf', '#dcedc1', '#ffd3b5', '#ffaaa6', '#ff8c94', '#db3069', '#703f5c', '#001e1d', '#1d4350', '#232931']
         },
         labels: ['8-9', '7-8', '6-7', '5-6', '4-5', '3-4', '2-3', '1-2', '0-1', ''],
         hoverinfo: 'label',
@@ -216,7 +216,6 @@ function drawGaugeChart(idNum) {
     };
     Plotly.newPlot('gauge', trace_data3, layout);
 }
-
 
 // initializing graphs with Data
 function initialization() {
