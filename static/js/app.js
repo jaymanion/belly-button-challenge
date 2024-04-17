@@ -189,7 +189,7 @@ function drawGaugeChart(idNum) {
                         textposition: 'inside',
                         marker: {colors: [  '#84B589', '#89BB8F', '#8CBF88', '#B7CC92', '#D5E49D',
                                             '#E5E7B3', '#E9E6CA', '#F4F1E5', '#F8F3EC', '#FFFFFF',]},
-                        labels: ['8-9','7-8','6-7','5-6', '4-5', '3-4', '2-3', '1-2', '0-1', ''],
+                        labels: ['10','9','8','7', '6', '5', '4', '3', '2', '1'],
                         hoverinfo: 'label',
                         hole: .5,
                         type: 'pie',
