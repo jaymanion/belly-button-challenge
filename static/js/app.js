@@ -216,12 +216,7 @@ function drawGaugeChart(idNum) {
     };
     Plotly.newPlot('gauge', trace_data3, layout);
 }
-<<<<<<< HEAD
 
-
-
-=======
->>>>>>> dd14535a586c25760f5b7cdfd053e7d3eaf8ce3f
 // initializing graphs with Data
 function initialization() {
     d3.json("./data/samples.json").then(function(jsonData) {
@@ -257,8 +252,5 @@ function optionChanged(idNum) {
     drawBarPlot(idNum);
     drawBubbleChart(idNum);
     drawGaugeChart(idNum);
-<<<<<<< HEAD
-};
-=======
-};
->>>>>>> dd14535a586c25760f5b7cdfd053e7d3eaf8ce3f
+}
+
