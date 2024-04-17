@@ -22,25 +22,25 @@ function populateDemoInfo (idNum) {
 }
 
 // using a comparing function
-function compareValues(key, order = 'asc') (
-	return function innerSort(a,b) {
-		if (!a.hasOwnProperty(key) || !b.hasOwnProperty(key)) {
-			return 0;
-		}
-		const varA = (typeof a[key] === 'String')
-			? a[key].toUpperCase() : a[key];
-		const varB = (typeof b[key] === 'String')
-			? b[key].toUpperCase() : b[key];
-		let comparison = 0;
-		if (varA > varB) {
-			comparison = 1;
-		} else if (varA < varB) {
-			comparison = -1;
-		}
-		return (
-			(order === 'desc') ? (comparison * -1) : comparison
-		);
-	};
+function compareValues(key, order = 'asc') {
+    return function innerSort(a, b) {
+        if (!a.hasOwnProperty(key) || !b.hasOwnProperty(key)) {
+            return 0;
+        }
+        const varA = (typeof a[key] === 'string')
+            ? a[key].toUpperCase() : a[key];
+        const varB = (typeof b[key] === 'string')
+            ? b[key].toUpperCase() : b[key];
+        let comparison = 0;
+        if (varA > varB) {
+            comparison = 1;
+        } else if (varA < varB) {
+            comparison = -1;
+        }
+        return (
+            (order === 'desc') ? (comparison * -1) : comparison
+        );
+    };
 }
 
 // creating bar plot
@@ -62,7 +62,7 @@ function drawBarPlot (idNum) {
     }
 	
 	// sort and slice
-	var sorted_list = all_combined.sort(compareValues{"sample_values", "desc"});
+	var sorted_list = all_combined.sort(compareValues("sample_values", "desc"));
     var sliced_list = sorted_list.slice(0, 10);
 	
 	// map text to arrays
