@@ -190,6 +190,7 @@ function initialization () {
         data = jsonData;
         console.log("Keys: " + Object.keys(data));
         names = data.names;
+		console.log("Loaded JSON Data:", data);
 
         // Test Subject ID No. Selector
         names.forEach(element => { input.append("option").text(element).property("value", element); });
