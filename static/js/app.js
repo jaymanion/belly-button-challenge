@@ -182,7 +182,7 @@ function drawGaugeChart(idNum) {
         textinfo: 'text',
         textposition: 'inside',
         marker: {
-            colors: ['#e5f5e0', '#c7e9c0', '#a1d99b', '#74c476', '#41ab5d', '#238b45', '#006d2c', '#00441b', '#a8a8a8', '#FFFFFF'] // Matching shades
+            colors: ['#a8e6cf', '#dcedc1', '#ffd3b5', '#ffaaa6', '#ff8c94', '#db3069', '#703f5c', '#001e1d', '#1d4350', '#232931']
         },
         labels: ['8-9', '7-8', '6-7', '5-6', '4-5', '3-4', '2-3', '1-2', '0-1', ''],
         hoverinfo: 'label',
@@ -252,5 +252,4 @@ function optionChanged(idNum) {
     drawBarPlot(idNum);
     drawBubbleChart(idNum);
     drawGaugeChart(idNum);
-}
-
+};
