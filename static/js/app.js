@@ -1,5 +1,6 @@
 // initial setup
 var data = {};
+
 var input = d3.select("#selDataset");
 var demo_info_panel = d3.select("#sample-metadata");
 
@@ -17,7 +18,7 @@ function populateDemoInfo (idNum) {
 	var metadata_filter = data.metadata.filter(item => item["id"] == idNum);
 	console.log(`metadata_filter length: ${metadata_filter.length}`);
 	demo_info_panel.html("");
-	Object.entries(metadata_filter[0]).forEach(([key, value]) => { var title_key = titleCase(key); panelDemoInfo.append("h6").text(`${titleKey}: ${value}`) });
+	Object.entries(metadata_filter[0]).forEach(([key, value]) => { var title_key = titleCase(key); demo_info_panel.append("h6").text(`${titleKey}: ${value}`) });
 }
 
 // using a comparing function
@@ -53,7 +54,7 @@ function drawBarPlot (idNum) {
     var otu_labels = samples_filter1[0].otu_labels;
 	
 	var all_combined = []
-	for (var i=0, i < sample_values.length; i++) [
+	for (var i=0, i < sample_values.length; i++) {
 		var otu_id = otu_ids[i];
         var otu_text = "OTU " + otu_id.toString();
         var combined_object = {"sample_values": sample_values[i], "otu_ids": otu_text, "otu_labels": otu_labels[i]};
@@ -61,7 +62,7 @@ function drawBarPlot (idNum) {
     }
 	
 	// sort and slice
-	var sorted_list = all_combined.sort(compareValues("sample_values", "desc"));
+	var sorted_list = all_combined.sort(compareValues{"sample_values", "desc"});
     var sliced_list = sorted_list.slice(0, 10);
 	
 	// map text to arrays
@@ -81,7 +82,7 @@ function drawBarPlot (idNum) {
         orientation: 'h'
     };
 	
-	var trace_data1 = [trace];
+	var trace_data1 = [trace1];
 	
 	var layout = {
         title: "Top 10 OTU's Found",
@@ -111,7 +112,7 @@ function drawBubbleChart(idNum) {
     };
 
     // data
-    var trace_data2 = [trace];
+    var trace_data2 = [trace2];
 
     // Define the layout
     var layout = {
