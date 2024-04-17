@@ -14,7 +14,7 @@ function titleCase(str) {
 }
 
 // Demographic Info panel population
-function populatedemoinfo(idNum) {
+function populateDemoInfo(idNum) {
     // Log a change
     console.log("Pop: " + idNum);
 
@@ -218,7 +218,7 @@ function initialization () {
 
         // Populate the Demo Info Panel
         var idNum = names[0];
-        populatedemoinfo(idNum);
+        populateDemoInfo(idNum);
 
         // Draw the graphs
         drawBarPlot(idNum);
@@ -231,7 +231,7 @@ initialization();
 
 function optionChanged(idNum) {
     // Update the Demo Info Panel
-    populatedemoinfo(idNum);
+    populateDemoInfo(idNum);
 
     // Draw the graphs
     drawBarPlot(idNum);
