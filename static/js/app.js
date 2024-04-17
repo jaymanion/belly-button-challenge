@@ -135,6 +135,7 @@ function drawGaugeChart(idNum) {
         },
         showlegend: false,
         name: 'frequency',
+		text: level,
         hoverinfo: 'text+name'
     }, {
         values: [180 / 9, 180 / 9, 180 / 9, 180 / 9, 180 / 9, 180 / 9, 180 / 9, 180 / 9, 180 / 9, 180],
