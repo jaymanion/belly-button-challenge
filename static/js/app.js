@@ -184,7 +184,7 @@ function drawGaugeChart(idNum) {
                         hoverinfo: 'text+name'},
                     {   values: [180/9, 180/9, 180/9, 180/9, 180/9, 180/9, 180/9, 180/9, 180/9, 180],
                         rotation: 90,
-                        text: ['8-9','7-8','6-7','5-6', '4-5', '3-4', '2-3', '1-2', '0-1', ''],
+                        text: ['10','9','8','7', '6', '5', '4', '3', '2', '1'],
                         textinfo: 'text',
                         textposition: 'inside',
                         marker: {colors: [  '#84B589', '#89BB8F', '#8CBF88', '#B7CC92', '#D5E49D',
